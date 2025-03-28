@@ -11,6 +11,15 @@ class UpdateJobOfferRequest extends FormRequest
      */
     public function authorize(): bool
     {
+        $user = auth()->user();
+        $jobOfferId = $this->route('id');
+        
+        // Only recruiters who own the job offer can update it
+        if ($user && $user->isRecruiter() && $jobOfferId) {
+            $jobOffer = \App\Models\JobOffer::find($jobOfferId);
+            return $jobOffer && $jobOffer->user_id === $user->id;
+        }
+        
         return false;
     }
 
@@ -22,7 +31,15 @@ class UpdateJobOfferRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'sometimes|required|string|max:255',
+            'description' => 'sometimes|required|string',
+            'location' => 'nullable|string|max:255',
+            'company_name' => 'sometimes|required|string|max:255',
+            'contract_type' => 'sometimes|required|string|max:100',
+            'salary_min' => 'nullable|numeric|min:0',
+            'salary_max' => 'nullable|numeric|min:0|gte:salary_min',
+            'is_active' => 'boolean',
+            'expires_at' => 'nullable|date|after:today',
         ];
     }
 }

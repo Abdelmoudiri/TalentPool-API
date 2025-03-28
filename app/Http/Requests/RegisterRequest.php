@@ -14,7 +14,7 @@ class RegisterRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,11 +25,10 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'fname' => ['required', 'string', 'max:255'],
-            'lname' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'max:255', 'unique:users'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
             'password' => ['required', 'confirmed', Password::default()],
-            'role' => ['required', Rule::in(['client', 'admin'])]
-        ];;
+            'role' => ['required', Rule::in(['candidate', 'recruiter', 'admin'])]
+        ];
     }
 }
